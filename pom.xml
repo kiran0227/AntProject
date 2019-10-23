@@ -1,75 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
-  <groupId>com.Largest.app</groupId>
-  <artifactId>Largest-app</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <name>Largest-app</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.inuua.executable_war</groupId>
+    <artifactId>executable-war-sample-project</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>executable-war-sample-project</name>
+    <url>http://inuua.org/</url>
+    <scm>
+        <connection>scm:git:https://github.com/jeanfric/executable-war-sample-application.git</connection>
+        <url>scm:git:https://github.com/jeanfric/executable-war-sample-application.git</url>
+    </scm>
+    <properties>
+        <winstoneFlavour>winstone-lite</winstoneFlavour>
+        <winstoneVersion>0.9.10</winstoneVersion>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.inuua</groupId>
+            <artifactId>executable-war</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.winstone</groupId>
+            <artifactId>${winstoneFlavour}</artifactId>
+            <version>${winstoneVersion}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.inuua.executable_war.App</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <X-Winstone-Jar>${winstoneFlavour}-${winstoneVersion}.jar</X-Winstone-Jar>
+                           <!-- Set some extra parameters to pass Winstone -->
+                           <!-- DO NOT SET webroot AND warfile -->
+                            <X-Extra-Winstone-Parameters>--useJNDI=false</X-Extra-Winstone-Parameters>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-executable</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.inuua</groupId>
+                                    <artifactId>executable-war</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/executable-war</outputDirectory>
+                                    <includes>**/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>fix-output</id>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <tasks>
+                               <!-- Change this if you set the final name yourself: -->
+                                <property name="d" location="${basedir}/target/${project.artifactId}-${project.version}"/>
+                                <copy todir="${d}">
+                                    <fileset dir="${basedir}/target/executable-war" includes="**/*"/>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
